@@ -2,7 +2,7 @@
 Handle routes for Flask website
 """
 from datetime import datetime
-from flask import redirect, render_template, request, url_for
+from flask import redirect, render_template, request, url_for, jsonify
 
 from officepong import app, db, elo
 from officepong.models import Player, Match
@@ -72,6 +72,17 @@ def add_match():
     return redirect(url_for('index'))
 
 
+@app.route('/delete', methods=['POST'])
+def delete():
+    ts = request.form['timestampform']
+    #print(ts)
+    matchid = Match.query.filter_by(timestamp=ts).first()
+    #print(matchid)
+    db.session.delete(matchid)
+    db.session.commit()
+    return redirect(url_for('index'))
+
+
 @app.route('/recalculate', methods=['POST'])
 def recalculate():
     """
@@ -111,6 +122,18 @@ def recalculate():
 
     db.session.commit()
     return redirect(url_for('index'))
+
+@app.route('/get', methods=['GET'])
+def get():
+# get all players
+    if request.method == 'GET':
+        players = db.session.query(Player).all()
+        players_list = sorted(((player.name) for player in players),
+                          reverse=True)
+        return jsonify(players= players_list,
+                    statusCode= 200,), 200
+    
+
 
 
 @app.route('/')

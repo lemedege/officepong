@@ -28,6 +28,13 @@
 	  <td>{{'%i%%' % (100 * (match.actual|float))}}</td>
 	  <td>{{'%i%%' % (100 * (match.expected|float))}}</td>
 	  <td align="right">{{'%.1f' % (match.delta|float)}}</td>
+	  <!--<td> {{match.timestamp}} </td> -->
+	  <td>
+        <form action="{{ url_for("delete") }}" method="post">
+            <input type="hidden" name="timestampform" value="{{ match["timestamp"] }}"/>
+            <button id="w3-btn">delete</button>
+        </form>
+    </td>
 	</tr>
 	{% endfor %}
       </table>
@@ -70,7 +77,7 @@
       {% for elo, name, _ in players %}<input type="checkbox" value="{{name}}" name="winner" id="win_{{name}}"/><label for="win_{{name}}">{{name}}</label>{% endfor %}
       <center>
 	<select name="win_score">
-	  <option value="21">21</option>
+	  <option value="11">11</option>
 	  {% for n in range(33) %}
 	  <option value="{{n}}">{{n}}</option>
 	  {% endfor %}
