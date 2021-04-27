@@ -6,6 +6,7 @@ from flask import redirect, render_template, request, url_for, jsonify
 
 from officepong import app, db, elo
 from officepong.models import Player, Match
+from sqlalchemy import func
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -28,10 +29,13 @@ def add_match():
     # Extract fields from request fields
     win_names, lose_names = request.form.getlist('winner'), request.form.getlist('loser')
     win_score, lose_score = int(request.form['win_score']), int(request.form['lose_score'])
+    
 
     # Minimize misclicks
     if lose_score + 2 > win_score or (win_score not in (11, 21) and lose_score + 2 != win_score):
         return redirect(url_for('index'))
+    
+    
     
     # Don't add score if there's a problem with the names
     if not win_names or not lose_names:
@@ -142,10 +146,17 @@ def index():
     The main page of the site. Display the dashboard.
     """
     def convert_timestamp(timestamp):
-        return datetime.fromtimestamp(int(timestamp)).strftime("%m-%d")
+        return datetime.fromtimestamp(int(timestamp)).strftime("%d/%m %HH:%MM")
+    def convert_timestamp_day(timestamp):
+        return datetime.fromtimestamp(int(timestamp)).strftime("%d/%m")
+    
     matches = db.session.query(Match).all()
     players = db.session.query(Player).all()
+    days = db.session.query(Match.timestamp, func.count(Match.timestamp)).group_by(func.substr(Match.timestamp, 1, 6)).all()
+    dayslist, countlist = zip(*days)
+    print(dayslist)
+    print(countlist)
     players_list = sorted(((player.elo, player.name, player.games) for player in players),
                           reverse=True)
     return render_template('home.html', matches=matches, players=players_list,
-                           convert_timestamp=convert_timestamp)
+                           convert_timestamp=convert_timestamp,convert_timestamp_day=convert_timestamp_day, countlist=countlist, dayslist=dayslist)

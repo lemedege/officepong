@@ -4,6 +4,7 @@
   <title>OfficePong</title>
   <link rel= "stylesheet" type= "text/css" href= "{{ url_for("static", filename="style.css") }}">
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <script src="{{ url_for('static', filename='Chart.min.js') }}"></script>
 </head>
 <body>
   <div class="results">
@@ -28,7 +29,7 @@
 	  <td>{{'%i%%' % (100 * (match.actual|float))}}</td>
 	  <td>{{'%i%%' % (100 * (match.expected|float))}}</td>
 	  <td align="right">{{'%.1f' % (match.delta|float)}}</td>
-	  <!--<td> {{match.timestamp}} </td> -->
+	  <<td> {{match.timestamp}} </td>
 	  <td>
         <form action="{{ url_for("delete") }}" method="post">
             <input type="hidden" name="timestampform" value="{{ match["timestamp"] }}"/>
@@ -65,7 +66,7 @@
       {% for elo, name, _ in players %}<input type="checkbox" value="{{name}}" name="loser" id="lose_{{name}}"/><label for="lose_{{name}}">{{name}}</label>{% endfor %}
       <center>
 	<select class="lose_score" name="lose_score">
-	  <option disabled selected value>
+	  <option value="0">0</option>
 	    {% for n in range(31) %}
 	  <option value="{{n}}">{{n}}</option>
 	  {% endfor %}
@@ -97,5 +98,49 @@
     <input type="text" name="name">
     <input type="submit" value="Register">
   </form>
+  
+  
+  <canvas id="chart" width="400" height="200"></canvas>
+  
+  <script>
+  
+     // get bar chart canvas
+     var mychart = document.getElementById("chart").getContext("2d");
+
+       steps = 10
+       //max = {{max}}
+       max = 20
+
+     // draw bar chart
+    new Chart(mychart, {
+    type: 'bar',
+        data: {
+        labels: [{% for day in dayslist %}
+                    "{{convert_timestamp_day(day)}}",
+               {% endfor %}],
+      datasets: [{
+         data: [{% for count in countlist %}
+                    "{{count}}", 
+                {% endfor %}],
+         backgroundColor: 'rgba(151,187,205,0.2)',
+         borderColor: 'rgba(151,187,205,1)',
+         pointBackgroundColor: 'rgba(151,187,205,1)'
+      }]
+   },
+   options: {
+      scales: {
+         yAxes: [{
+            ticks: {
+               beginAtZero: true,
+               stepSize: 10
+            }
+         }]
+      }
+   }
+});
+     
+
+    </script>
+  
 </body>
 </html>
