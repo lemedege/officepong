@@ -29,7 +29,7 @@
 	  <td>{{'%i%%' % (100 * (match.actual|float))}}</td>
 	  <td>{{'%i%%' % (100 * (match.expected|float))}}</td>
 	  <td align="right">{{'%.1f' % (match.delta|float)}}</td>
-	  <<td> {{match.timestamp}} </td>
+	  <!--<td> {{match.timestamp}} </td>-->
 	  <td>
         <form action="{{ url_for("delete") }}" method="post">
             <input type="hidden" name="timestampform" value="{{ match["timestamp"] }}"/>
