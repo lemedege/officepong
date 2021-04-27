@@ -152,7 +152,7 @@ def index():
     
     matches = db.session.query(Match).all()
     players = db.session.query(Player).all()
-    days = db.session.query(Match.timestamp, func.count(Match.timestamp)).group_by(func.substr(Match.timestamp, 1, 6)).all()
+    days = db.session.query(Match.timestamp, func.count(Match.timestamp)).group_by(func.substr(Match.timestamp, 1, 5)).all()
     dayslist, countlist = zip(*days)
     print(dayslist)
     print(countlist)
