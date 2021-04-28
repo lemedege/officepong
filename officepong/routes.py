@@ -153,9 +153,15 @@ def index():
     matches = db.session.query(Match).all()
     players = db.session.query(Player).all()
     days = db.session.query(Match.timestamp, func.count(Match.timestamp)).group_by(func.substr(Match.timestamp, 1, 5)).all()
-    dayslist, countlist = zip(*days)
-    print(dayslist)
-    print(countlist)
+    #check if query is empty.
+    if not days: 
+        print('query is empty')
+        dayslist = []
+        countlist = []
+    else:
+        dayslist, countlist = zip(*days)
+        print(dayslist)
+        print(countlist)
     players_list = sorted(((player.elo, player.name, player.games) for player in players),
                           reverse=True)
     return render_template('home.html', matches=matches, players=players_list,
