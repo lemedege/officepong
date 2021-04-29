@@ -1,147 +1,153 @@
 {# officepong/templates/home.html #}
 <!doctype html>
 <head>
-  <title>OfficePong</title>
-  <link rel= "stylesheet" type= "text/css" href= "{{ url_for("static", filename="style.css") }}">
-  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-  <script src="{{ url_for('static', filename='Chart.min.js') }}"></script>
+<title>OfficePong</title>
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for("static", filename="style.css") }}">
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<script src="{{ url_for('static', filename='Chart.min.js') }}"></script>
 </head>
 <body>
-  <div class="results">
+<div class="results">
     <div class="matches">
-      <h3>Match History</h3>
-      <table>
-	<tr>
-	  <th>Date</th>
-	  <th>Won</th>
-	  <th>Lost</th>
-	  <th>Score</th>
-	  <th>Act.</th>
-	  <th>Exp.</th>
-	  <th>&Delta;</th>
-	</tr>
-	{% for match in matches[::-1] %}
-	<tr>
-	  <td>{{convert_timestamp(match.timestamp)}}</td>
-	  <td>{{match.winners}}</td>
-	  <td>{{match.losers}}</td>
-	  <td>{{match.win_score}} : {{match.lose_score}}</td>
-	  <td>{{'%i%%' % (100 * (match.actual|float))}}</td>
-	  <td>{{'%i%%' % (100 * (match.expected|float))}}</td>
-	  <td align="right">{{'%.1f' % (match.delta|float)}}</td>
-	  <!--<td> {{match.timestamp}} </td>-->
-	  <td>
+    <h3>Match History</h3>
+    <table>
+    <tr>
+    <th>Date</th>
+    <th>Won</th>
+    <th>Lost</th>
+    <th>Score</th>
+    <th>Act.</th>
+    <th>Exp.</th>
+    <th>&Delta;</th>
+    </tr>
+    {% for match in matches[::-1] %}
+    <tr>
+    <td>{{convert_timestamp(match.timestamp)}}</td>
+    <td>{{match.winners}}</td>
+    <td>{{match.losers}}</td>
+    <td>{{match.win_score}} : {{match.lose_score}}</td>
+    <td>{{'%i%%' % (100 * (match.actual|float))}}</td>
+    <td>{{'%i%%' % (100 * (match.expected|float))}}</td>
+    <td align="right">{{'%.1f' % (match.delta|float)}}</td>
+    <!--<td> {{match.timestamp}} </td>-->
+    <td>
         <form action="{{ url_for("delete") }}" method="post">
             <input type="hidden" name="timestampform" value="{{ match["timestamp"] }}"/>
             <button id="w3-btn">delete</button>
         </form>
     </td>
-	</tr>
-	{% endfor %}
-      </table>
+    </tr>
+    {% endfor %}
+    </table>
     </div>
     <div class="leaderboard">
-      <h3>Leaderboard</h3>
-      <table>
-	<tr>
-	  <th>Name</th>
-	  <th>Elo</th>
-	  <th align="right">Games</th>
-	</tr>
-	{% for elo, name, games in players if games >= 3 %}
-	<tr>
-	  <td>{{name}}</td>
-	  <td align="right">{{elo|int}}</td>
-	  <td align="right">{{games|int}}</td>
-	</tr>
-	{% endfor %}
-      </table>
+    <h3>Leaderboard</h3>
+    <table>
+    <tr>
+    <th>Name</th>
+    <th>Elo</th>
+    <th align="right">Games</th>
+    </tr>
+    {% for elo, name, games in players if games >= 3 %}
+    <tr>
+    <td>{{name}}</td>
+    <td align="right">{{elo|int}}</td>
+    <td align="right">{{games|int}}</td>
+    </tr>
+    {% endfor %}
+    </table>
     </div>
-  </div>
-  <hr>
-  <div>
-  <form action="{{ url_for("add_match") }}" method="post">
+</div>
+<hr>
+<div>
+<form action="{{ url_for("add_match") }}" method="post">
     <div class="loser">
-      <h3>Loser</h3>
-      {% for elo, name, _ in players %}<input type="checkbox" value="{{name}}" name="loser" id="lose_{{name}}"/><label for="lose_{{name}}">{{name}}</label>{% endfor %}
-      <center>
-	<select class="lose_score" name="lose_score">
-	  <option value="0">0</option>
-	    {% for n in range(31) %}
-	  <option value="{{n}}">{{n}}</option>
-	  {% endfor %}
-	</select>
-      </center>
+    <h3>Loser</h3>
+    {% for elo, name, _ in players %}<input type="checkbox" value="{{name}}" name="loser" id="lose_{{name}}"/><label for="lose_{{name}}">{{name}}</label>{% endfor %}
+    <center>
+    <select class="lose_score" name="lose_score">
+							{% for n in range(33) %}
+								{% if n == 0 %}
+									<option value="{{n}}" selected>{{n}}</option>
+								{% else %}
+									<option value="{{n}}">{{n}}</option>
+								{% endif %}
+							{% endfor %}
+    </select>
+    </center>
     </div>
     <div class="winner">
-      <h3>Winner</h3>
-      {% for elo, name, _ in players %}<input type="checkbox" value="{{name}}" name="winner" id="win_{{name}}"/><label for="win_{{name}}">{{name}}</label>{% endfor %}
-      <center>
-	<select name="win_score">
-	  <option value="11">11</option>
-	  {% for n in range(33) %}
-	  <option value="{{n}}">{{n}}</option>
-	  {% endfor %}
-	</select>
-      </center>
+    <h3>Winner</h3>
+    {% for elo, name, _ in players %}<input type="checkbox" value="{{name}}" name="winner" id="win_{{name}}"/><label for="win_{{name}}">{{name}}</label>{% endfor %}
+    <center>
+    <select name="win_score">
+                            {% for n in range(33) %}
+                                {% if n == 21 %}
+                                    <option value="{{n}}" selected>{{n}}</option>
+                                {% else %}
+                                    <option value="{{n}}">{{n}}</option>
+                                {% endif %}
+                            {% endfor %}
+    </select>
+    </center>
     </div>
     <input type="submit" value="Add Match" class="wide">
-  </form>
-  </div>
-  <hr>
-  <div class="recalculate">
+</form>
+</div>
+<hr>
+<div class="recalculate">
     <form action="{{ url_for("recalculate") }}" method="post">
-      <input type="submit" value="Recalculate">
+    <input type="submit" value="Recalculate">
     </form>
-  </div>
-  <form action="{{ url_for("register") }}" method="post">
+</div>
+<form action="{{ url_for("register") }}" method="post">
     <input type="text" name="name">
     <input type="submit" value="Register">
-  </form>
-  
-  <h3>Played games</h3>
-  <canvas id="chart" width="400" height="200"></canvas>
-  
-  <script>
-  
-     // get bar chart canvas
-     var mychart = document.getElementById("chart").getContext("2d");
+</form>
 
-       steps = 10
-       //max = {{max}}
-       max = 20
+<h3>Played games</h3>
+<canvas id="chart" width="400" height="200"></canvas>
 
-     // draw bar chart
+<script>
+
+    // get bar chart canvas
+    var mychart = document.getElementById("chart").getContext("2d");
+
+    steps = 10
+    //max = {{max}}
+    max = 20
+
+    // draw bar chart
     new Chart(mychart, {
     type: 'bar',
         data: {
         labels: [{% for day in dayslist %}
                     "{{convert_timestamp_day(day)}}",
-               {% endfor %}],
-      datasets: [{
-         data: [{% for count in countlist %}
+            {% endfor %}],
+    datasets: [{
+        data: [{% for count in countlist %}
                     "{{count}}", 
                 {% endfor %}],
                 label: "played games",
-         backgroundColor: 'rgba(151,187,205,1)',
-         borderColor: 'rgba(151,187,205,1)',
-         pointBackgroundColor: 'rgba(151,187,205,1)'
-      }]
-   },
-   options: {
-      scales: {
-         yAxes: [{
+        backgroundColor: 'rgba(151,187,205,1)',
+        borderColor: 'rgba(151,187,205,1)',
+        pointBackgroundColor: 'rgba(151,187,205,1)'
+    }]
+},
+options: {
+    scales: {
+        yAxes: [{
             ticks: {
-               beginAtZero: true,
-               stepSize: 10
+            beginAtZero: true,
+            stepSize: 10
             }
-         }]
-      }
-   }
+        }]
+    }
+}
 });
-     
+    
 
     </script>
-  
+
 </body>
 </html>
