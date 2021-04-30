@@ -1,16 +1,42 @@
 {# officepong/templates/home.html #}
 <!doctype html>
+<html lang="en">
 <head>
+<!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>OfficePong</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for("static", filename="style.css") }}">
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 <script src="{{ url_for('static', filename='Chart.min.js') }}"></script>
 </head>
 <body>
-<div class="results">
-    <div class="matches">
+<div class="container">
+<div class="row">
+   
+    <div class="col-4">
+    <h3>Leaderboard</h3>
+    <table class="table table-sm">
+    <tr>
+    <th>Name</th>
+    <th>Elo</th>
+    <th align="right">Games</th>
+    </tr>
+    {% for elo, name, games in players if games >= 3 %}
+    <tr>
+    <td>{{name}}</td>
+    <td align="right">{{elo|int}}</td>
+    <td align="right">{{games|int}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+    </div>
+    
+     <div class="col-8">
     <h3>Match History</h3>
-    <table>
+    <table class="table table-hover table-sm table-striped">
     <tr>
     <th>Date</th>
     <th>Won</th>
@@ -33,39 +59,43 @@
     <td>
         <form action="{{ url_for("delete") }}" method="post">
             <input type="hidden" name="timestampform" value="{{ match["timestamp"] }}"/>
-            <button id="w3-btn">delete</button>
+            <button type="button" class="btn btn-outline-danger btn-sm">delete</button>
         </form>
     </td>
     </tr>
     {% endfor %}
     </table>
     </div>
-    <div class="leaderboard">
-    <h3>Leaderboard</h3>
-    <table>
-    <tr>
-    <th>Name</th>
-    <th>Elo</th>
-    <th align="right">Games</th>
-    </tr>
-    {% for elo, name, games in players if games >= 3 %}
-    <tr>
-    <td>{{name}}</td>
-    <td align="right">{{elo|int}}</td>
-    <td align="right">{{games|int}}</td>
-    </tr>
-    {% endfor %}
-    </table>
-    </div>
+    
 </div>
 <hr>
-<div>
+
+
 <form action="{{ url_for("add_match") }}" method="post">
-    <div class="loser">
+
+<div class="row">
+    <div class="col">
+    <h3>Winner</h3>
+     
+    {% for elo, name, _ in players %}<input type="checkbox" class="btn-check" value="{{name}}" name="winner" id="win_{{name}}"/><label class="btn btn-outline-success" for="win_{{name}}">{{name}}</label>{% endfor %}
+    <br>
+    <select class="form-select" name="win_score">
+                            {% for n in range(33) %}
+                                {% if n == 11 %}
+                                    <option value="{{n}}" selected>{{n}}</option>
+                                {% else %}
+                                    <option value="{{n}}">{{n}}</option>
+                                {% endif %}
+                            {% endfor %}
+    </select>
+    <br>
+    </div>
+
+    <div class="col">
     <h3>Loser</h3>
-    {% for elo, name, _ in players %}<input type="checkbox" value="{{name}}" name="loser" id="lose_{{name}}"/><label for="lose_{{name}}">{{name}}</label>{% endfor %}
+    {% for elo, name, _ in players %}<input type="checkbox" class="btn-check" value="{{name}}" name="loser" id="lose_{{name}}"/><label class="btn btn-outline-danger" for="lose_{{name}}">{{name}}</label>{% endfor %}
     <center>
-    <select class="lose_score" name="lose_score">
+    <select class="lose_score form-select" name="lose_score">
 							{% for n in range(33) %}
 								{% if n == 0 %}
 									<option value="{{n}}" selected>{{n}}</option>
@@ -76,34 +106,44 @@
     </select>
     </center>
     </div>
-    <div class="winner">
-    <h3>Winner</h3>
-    {% for elo, name, _ in players %}<input type="checkbox" value="{{name}}" name="winner" id="win_{{name}}"/><label for="win_{{name}}">{{name}}</label>{% endfor %}
-    <center>
-    <select name="win_score">
-                            {% for n in range(33) %}
-                                {% if n == 21 %}
-                                    <option value="{{n}}" selected>{{n}}</option>
-                                {% else %}
-                                    <option value="{{n}}">{{n}}</option>
-                                {% endif %}
-                            {% endfor %}
-    </select>
-    </center>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="d-grid gap-2">
+            <input type="submit" value="Add Match" class="wide btn btn-primary">
+        </div>
     </div>
-    <input type="submit" value="Add Match" class="wide">
+</div>
+
+</form>
+
+
+
+<hr>
+<div class="row">
+
+<div class="col">
+<form class="row g-2" action="{{ url_for("register") }}" method="post">
+  <div class="col-auto">
+    <input class="form-control" type="text" name="name">
+    </div>
+      <div class="col-auto">
+    <input type="submit" value="Register" class="btn btn-secondary">
+    </div>
 </form>
 </div>
-<hr>
-<div class="recalculate">
+
+<div class="col">
+<div class="recalculate float-end">
     <form action="{{ url_for("recalculate") }}" method="post">
-    <input type="submit" value="Recalculate">
+    <input type="submit" value="Recalculate" class="btn btn-secondary">
     </form>
 </div>
-<form action="{{ url_for("register") }}" method="post">
-    <input type="text" name="name">
-    <input type="submit" value="Register">
-</form>
+</div>
+
+
+</div>
 
 <h3>Played games</h3>
 <canvas id="chart" width="400" height="200"></canvas>
@@ -148,6 +188,9 @@ options: {
     
 
     </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
 
+</div>
 </body>
 </html>

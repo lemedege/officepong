@@ -1,102 +1,104 @@
 body {
-    max-width: 860px;
-    margin: auto;
+/*     max-width: 860px; */
+/*     margin: auto; */
     background-color: #c0c0c0;
 }
 table {
-    border-collapse: collapse;
-    position: relative;
+/*     border-collapse: collapse; */
+/*     position: relative; */
     overflow: auto;
     max-height: 300px;
-    display: block;
+     display: block;
 }
-td {
+/*td {
     border: 1px solid black;
     padding: 5px;
     margin: 5px;
-}
+}*/
 label {
-    display: inline-block;
+  /*  display: inline-block;
     cursor: pointer;    
     border: 1px solid black;
     width: 98px;
     padding: 15px 0px;
     margin: 0px;
     text-align: center;
-    background-color: #eeeeee;
+    background-color: #eeeeee;*/
 }
 input[type="checkbox"] {
-    display: none;
+   /* display: none;*/
 }
 input[type="submit"] {
-    margin: 0px;
-    padding: 10px;
-    background-color: #eeeeee;
+/*     margin: 0px; */
+/*     padding: 10px; */
+/*     background-color: #eeeeee; */
 }
 input[type="submit"] {
-    margin: 0px;
-    padding: 10px;
-    background-color: #ffb6c1;
+/*     margin: 0px; */
+/*     padding: 10px; */
+/*     background-color: #ffb6c1; */
 }
 input[type="text"] {
-    margin: 0px;
-    padding: 10px;
+/*     margin: 0px; */
+   /* padding: 10px;
     background-color: #eeeeee;
+    display: inline;
+    width: 300px;*/
 }
 input[type="radio"] {
-    display: none;
+    /*display: none;*/
 }
 .winner input[type="checkbox"]:checked+label {
-    background: #98fb98;
+    /*background: #98fb98;*/
 }
 .loser input[type="checkbox"]:checked+label {
-    background: #f08080;
+ /*   background: #f08080;*/
 }
-div.winner {
-    max-width: 400px;
-    position: relative;
+div.winner {/*
     display: inline-block;
+    max-width: 400px;
+    position: relative;*/
 }
-div.loser {
+div.loser {/*
     max-width: 400px;
     float: right;
     position: relative;
-    display: inline-block;
+    display: inline-block;*/
 }
-select {
+select {/*
     text-align-last: center;
     margin: 0px;
     padding: 5px;
     font-size: 1.5em;
-    background-color: #eeeeee;
+    background-color: #eeeeee;*/
 }
 .winner select {
-    border: 1px solid #98fb98;
+    /*border: 1px solid #98fb98;
     width: 400px;
-    margin: 20px 0px;
+    margin: 20px 0px;*/
 }
-.loser select {
+.loser select {/*
     border: 1px solid #f08080;
     width: 400px;
-    margin: 20px 0px;
+    margin: 20px 0px;*/
 }
 .results {
-    height: 400px;
-    max-height: 400px;
+   /* height: 400px;
+    max-height: 400px;*/
 }
 .leaderboard {
-    width: 250px;
+   /* width: 250px;
     float: left;
-    max-height: 400px;
+    max-height: 400px;*/
 }
 .matches {
-    float: right;
-    width: 600px;
+   /* float: right;
+    width: 600px;*/
 }
 .wide {
-    display: block;
-    width: 100%;
+  /*  display: block;
+    width: 100%;*/
 }
 .recalculate {
-    float: right;
+   /* float: right;*/
 }
