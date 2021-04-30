@@ -60,7 +60,8 @@
     <td>
         <form action="{{ url_for("delete") }}" method="post">
             <input type="hidden" name="timestampform" value="{{ match["timestamp"] }}"/>
-            <button type="button" class="btn btn-outline-secondary btn-sm">delete</button>
+                <input type="submit" value="delete" class="btn btn-outline-secondary btn-sm">
+
         </form>
     </td>
     </tr>
