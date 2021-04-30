@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>OfficePong</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for("static", filename="bootstrap.min.css") }}">
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for("static", filename="style.css") }}">
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 <script src="{{ url_for('static', filename='Chart.min.js') }}"></script>
@@ -22,21 +22,22 @@
     <tr>
     <th>Name</th>
     <th>Elo</th>
-    <th align="right">Games</th>
+    <th>Games</th>
     </tr>
     {% for elo, name, games in players if games >= 3 %}
     <tr>
     <td>{{name}}</td>
-    <td align="right">{{elo|int}}</td>
-    <td align="right">{{games|int}}</td>
+    <td>{{elo|int}}</td>
+    <td>{{games|int}}</td>
     </tr>
     {% endfor %}
     </table>
     </div>
     
      <div class="col-8">
-    <h3>Match History</h3>
-    <table class="table table-hover table-sm table-striped">
+    <h3 class="">Match History</h3>
+    <table class="history table table-hover table-sm table-striped">
+    <tbody class="">
     <tr>
     <th>Date</th>
     <th>Won</th>
@@ -54,16 +55,17 @@
     <td>{{match.win_score}} : {{match.lose_score}}</td>
     <td>{{'%i%%' % (100 * (match.actual|float))}}</td>
     <td>{{'%i%%' % (100 * (match.expected|float))}}</td>
-    <td align="right">{{'%.1f' % (match.delta|float)}}</td>
+    <td>{{'%.1f' % (match.delta|float)}}</td>
     <!--<td> {{match.timestamp}} </td>-->
     <td>
         <form action="{{ url_for("delete") }}" method="post">
             <input type="hidden" name="timestampform" value="{{ match["timestamp"] }}"/>
-            <button type="button" class="btn btn-outline-danger btn-sm">delete</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm">delete</button>
         </form>
     </td>
     </tr>
     {% endfor %}
+    </tbody>
     </table>
     </div>
     
@@ -76,10 +78,9 @@
 <div class="row">
     <div class="col">
     <h3>Winner</h3>
-     
     {% for elo, name, _ in players %}<input type="checkbox" class="btn-check" value="{{name}}" name="winner" id="win_{{name}}"/><label class="btn btn-outline-success" for="win_{{name}}">{{name}}</label>{% endfor %}
-    <br>
-    <select class="form-select" name="win_score">
+    
+    <select class="mt-2 form-select" name="win_score">
                             {% for n in range(33) %}
                                 {% if n == 11 %}
                                     <option value="{{n}}" selected>{{n}}</option>
@@ -95,7 +96,7 @@
     <h3>Loser</h3>
     {% for elo, name, _ in players %}<input type="checkbox" class="btn-check" value="{{name}}" name="loser" id="lose_{{name}}"/><label class="btn btn-outline-danger" for="lose_{{name}}">{{name}}</label>{% endfor %}
     <center>
-    <select class="lose_score form-select" name="lose_score">
+    <select class="mt-2 lose_score form-select" name="lose_score">
 							{% for n in range(33) %}
 								{% if n == 0 %}
 									<option value="{{n}}" selected>{{n}}</option>
@@ -145,8 +146,9 @@
 
 </div>
 
-<h3>Played games</h3>
-<canvas id="chart" width="400" height="200"></canvas>
+<hr>
+
+<canvas id="chart" width="400" height="50"></canvas>
 
 <script>
 
@@ -169,9 +171,9 @@
                     "{{count}}", 
                 {% endfor %}],
                 label: "played games",
-        backgroundColor: 'rgba(151,187,205,1)',
-        borderColor: 'rgba(151,187,205,1)',
-        pointBackgroundColor: 'rgba(151,187,205,1)'
+        backgroundColor: 'rgba(108,117,125,1)',
+        borderColor: 'rgba(108,117,125,1)',
+        pointBackgroundColor: 'rgba(108,117,125,1)'
     }]
 },
 options: {
@@ -188,8 +190,8 @@ options: {
     
 
     </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+
 
 </div>
 </body>

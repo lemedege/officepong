@@ -6,10 +6,16 @@ body {
 table {
 /*     border-collapse: collapse; */
 /*     position: relative; */
-    overflow: auto;
-    max-height: 300px;
-     display: block;
+/*     overflow: auto; */
+/*     max-height: 300px; */
+/*      display: block; */
 }
+.history {
+        overflow:auto;
+        max-height:300px;
+        display:block;
+}
+
 /*td {
     border: 1px solid black;
     padding: 5px;

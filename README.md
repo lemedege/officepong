@@ -13,14 +13,14 @@ This is a basic python-based Flask webapp. While it has been developed and used 
 ```bash
 sudo apt install python3-pip sqlite3
 pip3 install --user flask flask_sqlalchemy
-cat officepong.sql | sqlite3 /tmp/officepong.db
+cat officepong.sql | sqlite3 /opt/officepong.db
 python3 setup.py install --user
 ```
 
 ## Run
 
 ```bash
-FLASK_APP=officepong nohup flask run --host 0.0.0.0 &
+FLASK_APP=officepong nohup python3 -m flask run --host 0.0.0.0 &
 ```
 
 Navigate to http://localhost:5000/ in your browser. Nohup allows it to continue running after you close your terminal window.
@@ -37,6 +37,6 @@ If a new version ever comes out, you can install and run it using the following:
 cd officepong
 git pull
 python3 setup.py install --user
-killall flask
-FLASK_APP=officepong nohup flask run --host 0.0.0.0 &
+killall -KILL flask
+FLASK_APP=officepong nohup python3 -m flask run --host 0.0.0.0 &
 ```
