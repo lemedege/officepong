@@ -136,6 +136,89 @@ def get():
                           reverse=True)
         return jsonify(players= players_list,
                     statusCode= 200,), 200
+
+
+# GET requests will be blocked
+@app.route('/json', methods=['POST'])
+def json():
+
+#       {
+  #         "win_names": "player1",
+  #         "lose_names":"player2",
+  #         "win_score":11,
+  #         "lose_score":6,
+  #         "statusCode": 200
+#       }  
+    
+    request_data = request.get_json()
+    
+    win_names = None
+    lose_names = None
+    win_score = None
+    lose_score = None
+
+    if request_data:
+        if 'win_names' in request_data:
+            win_names = request_data['win_names']
+
+        if 'lose_names' in request_data:
+            lose_names = request_data['lose_names']
+            
+        if 'win_score' in request_data:
+            win_score = int(request_data['win_score'])
+            
+        if 'lose_score' in request_data:
+            lose_score = int(request_data['lose_score'])
+    
+    win_names, lose_names = [win_names], [lose_names]
+    
+    print(win_names)
+    print(lose_names)
+    print(win_score)
+    print(lose_score)
+    
+    # Minimize misclicks
+    if lose_score + 2 > win_score or (win_score not in (11, 21) and lose_score + 2 != win_score):
+        return redirect(url_for('index'))
+
+    # Don't add score if there's a problem with the names
+    if not win_names or not lose_names:
+        return redirect(url_for('index'))
+    for name in win_names:
+        if name in lose_names:
+            return redirect(url_for('index'))
+    for name in lose_names:
+        if name in win_names:
+            return redirect(url_for('index'))
+
+    # Map each player to their current elo and #games for easy use below
+    players = {}
+    for player in db.session.query(Player).all():
+        players[player.name] = {'elo': player.elo, 'games': player.games}
+
+    # Figure out the elo and its change for the players
+    win_elo = sum([players[name]['elo'] for name in win_names])
+    lose_elo = sum([players[name]['elo'] for name in lose_names])
+    actual, expected, delta = elo.calculate_delta(win_elo, lose_elo, win_score, lose_score)
+
+    # Update elo and #games for both losers and winners
+    for name in win_names:
+        e = players[name]['elo'] + delta / len(win_names)
+        g = players[name]['games'] + 1
+        db.session.query(Player).filter_by(name=name).update({Player.elo: e, Player.games: g})
+    for name in lose_names:
+        e = players[name]['elo'] - delta / len(lose_names)
+        g = players[name]['games'] + 1
+        db.session.query(Player).filter_by(name=name).update({Player.elo: e, Player.games: g})
+
+    # Add match to database
+    win_str, lose_str = ','.join(win_names), ','.join(lose_names)
+    match = Match(win_str, lose_str, win_score, lose_score, actual, expected, delta)
+    db.session.add(match)
+
+    db.session.commit()
+    return redirect(url_for('index'))
+
     
 
 
@@ -152,7 +235,8 @@ def index():
     
     matches = db.session.query(Match).all()
     players = db.session.query(Player).all()
-    days = db.session.query(Match.timestamp, func.count(Match.timestamp)).group_by(func.substr(Match.timestamp, 1, 5)).all()
+    days=db.session.query(Match.timestamp, func.count(Match.timestamp)).group_by(func.strftime('%Y-%m-%d', Match.timestamp, 'unixepoch', 'localtime')).all()
+    
     #check if query is empty.
     if not days: 
         print('query is empty')
