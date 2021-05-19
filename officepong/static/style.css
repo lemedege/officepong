@@ -96,7 +96,25 @@ select {/*
    /* width: 250px;
     float: left;
     max-height: 400px;*/
+   
 }
+
+.leaderboard tr:nth-child(2) {
+    background:linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+}
+
+.leaderboard tr:nth-child(3) {
+    background: rgb(119,119,119);
+    background: linear-gradient(to right, rgba(119,119,119,1), rgba(237,237,237,1), rgba(157,157,157,1), rgba(227,227,227,1), rgba(119,119,119,1));
+}
+
+
+.leaderboard tr:nth-child(4){
+  background: rgb(143,68,0);
+background: linear-gradient(to right, rgba(194,94,3,1), rgba(222,155,94,1), rgba(194,94,3,1), rgba(222,155,94,1), rgba(143,68,0,1));    
+}
+
+
 .matches {
    /* float: right;
     width: 600px;*/
