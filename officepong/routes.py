@@ -251,6 +251,7 @@ def index():
     oldest_lost = db.session.query(Match.losers,func.max(Match.timestamp)).group_by(Match.losers).order_by(asc(Match.timestamp)).all()
     
     oldest_games = {}
+    old_players =[]
 
     for player,timestamp in oldest_wins:
 	    oldest_games.setdefault(player, timestamp)
