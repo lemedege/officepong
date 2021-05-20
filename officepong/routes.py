@@ -6,7 +6,7 @@ from flask import redirect, render_template, request, url_for, jsonify
 
 from officepong import app, db, elo
 from officepong.models import Player, Match
-from sqlalchemy import func
+from sqlalchemy import func, desc, asc
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -244,9 +244,26 @@ def index():
         countlist = []
     else:
         dayslist, countlist = zip(*days)
-        print(dayslist)
-        print(countlist)
+        #print(dayslist)
+        #print(countlist)
+        
+    oldest_wins = db.session.query(Match.winners,func.max(Match.timestamp)).group_by(Match.winners).order_by(asc(Match.timestamp)).all()
+    oldest_lost = db.session.query(Match.losers,func.max(Match.timestamp)).group_by(Match.losers).order_by(asc(Match.timestamp)).all()
+    
+    oldest_games = {}
+
+    for player,timestamp in oldest_wins:
+	    oldest_games.setdefault(player, timestamp)
+
+    for item in oldest_lost:
+        if item[0] in oldest_games.keys():
+            if item[1] > oldest_games.get(item[0]):
+                oldest_games[item[0]] = item[1]
+
+
+    old_players = sorted(oldest_games.items(),key=lambda x:x[1])[:2]
+
     players_list = sorted(((player.elo, player.name, player.games) for player in players),
                           reverse=True)
     return render_template('home.html', matches=matches, players=players_list,
-                           convert_timestamp=convert_timestamp,convert_timestamp_day=convert_timestamp_day, countlist=countlist, dayslist=dayslist)
+                           convert_timestamp=convert_timestamp,convert_timestamp_day=convert_timestamp_day, countlist=countlist, dayslist=dayslist, old_players=old_players)
