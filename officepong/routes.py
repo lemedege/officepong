@@ -4,9 +4,11 @@ Handle routes for Flask website
 from datetime import datetime
 from flask import redirect, render_template, request, url_for, jsonify
 
-from officepong import app, db, elo
+from officepong import app, db, elo, pingpong
 from officepong.models import Player, Match
 from sqlalchemy import func, desc, asc
+
+
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -73,6 +75,7 @@ def add_match():
     db.session.add(match)
 
     db.session.commit()
+    pingpong.post(win_names, lose_names, win_score, lose_score, delta)
     return redirect(url_for('index'))
 
 
