@@ -6,7 +6,7 @@ from flask import redirect, render_template, request, url_for, jsonify
 
 from officepong import app, db, elo, pingpong
 from officepong.models import Player, Match
-from sqlalchemy import func, desc, asc
+from sqlalchemy import func, desc, asc, between
 
 
 
@@ -263,11 +263,52 @@ def index():
         if item[0] in oldest_games.keys():
             if item[1] > oldest_games.get(item[0]):
                 oldest_games[item[0]] = item[1]
+                
+                
+                
+                
+   # Create list of players scores for each day
+    playersdict = {}
+    scorelist =[]
+    for player in db.session.query(Player).all():
+        playersdict[player.name] = {'elo': Player.elo.default.arg, 'list': []}
+
+    # Update eatch match
+    previousday = 0;
+    for count, day in enumerate(dayslist):
+        #print(count, convert_timestamp_day(previousday), convert_timestamp_day(day))
+        if(count<len(dayslist)-1):
+            matchlist = db.session.query(Match).filter(Match.timestamp >= day).filter(Match.timestamp < dayslist[count+1]).all()
+        else:
+            matchlist = db.session.query(Match).filter(Match.timestamp >= day).all()
+        for match in matchlist:
+            winners = match.winners.split(',')
+            losers = match.losers.split(',')
+            win_elo = sum([playersdict[name]['elo'] for name in winners])
+            lose_elo = sum([playersdict[name]['elo'] for name in losers])
+            actual, expected, delta = elo.calculate_delta(win_elo, lose_elo,
+                                                          match.win_score, match.lose_score)
+
+            # Update player totals
+            for name in winners:
+                playersdict[name]['elo'] += delta / len(winners)
+                #playersdict[name]['games'] += 1
+            for name in losers:
+                playersdict[name]['elo'] -= delta / len(losers)
+                #playersdict[name]['games'] += 1
+        for name, score in playersdict.items():
+            playersdict[name]['list'].append(playersdict[name]['elo'])
+        #scorelist.append(playersdict[name]['elo'])
+        previousday = day
+    #print(playersdict)
+            
+        
+    
 
 
     old_players = sorted(oldest_games.items(),key=lambda x:x[1])[:2]
 
-    players_list = sorted(((player.elo, player.name, player.games) for player in players),
-                          reverse=True)
-    return render_template('home.html', matches=matches, players=players_list,
+    players_list = sorted(((player.elo, player.name, player.games) for player in players),reverse=True)
+    
+    return render_template('home.html', matches=matches, players=players_list, playersdict=playersdict,
                            convert_timestamp=convert_timestamp,convert_timestamp_day=convert_timestamp_day, countlist=countlist, dayslist=dayslist, old_players=old_players)

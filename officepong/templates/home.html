@@ -15,7 +15,7 @@
 <body>
 <div class="container">
     
-<div class="row pt-3">
+<div class="row pt-3 row-eq-height">
    
     <div class="col">
     <h3>Leaderboard</h3>
@@ -35,7 +35,7 @@
     </table>
     </div>
     
-     <div class="col">
+     <div class="col" style="overflow-y:auto;">
     <h3 class="">Match History</h3>
     <div class="history">
     <table class="table table-hover table-sm table-striped">
@@ -77,6 +77,7 @@
 <hr>
 
 
+
 <form action="{{ url_for("add_match") }}" method="post">
 
 <div class="row">
@@ -93,6 +94,9 @@
                                 {% endif %}
                             {% endfor %}
     </select>
+    
+
+    
     <br>
     </div>
 
@@ -155,6 +159,8 @@
 <canvas id="chart" width="400" height="50"></canvas>
 
 
+<canvas id="linechart" width="400" height="200"></canvas>
+
 {% if old_players%}
 <div class="row pt-3">
 	<div class="col">
@@ -203,6 +209,100 @@ options: {
 }
 });
     </script>
+    
+    <script>
+
+    var randomColorGenerator = function () { 
+    return '#' + (Math.random().toString(16) + '0000000').slice(2, 8); 
+    };
+    
+    var stringToColour = function(str) {
+  var hash = 0;
+  for (var i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  var colour = '#';
+  for (var i = 0; i < 3; i++) {
+    var value = (hash >> (i * 8)) & 0xFF;
+    colour += ('00' + value.toString(16)).substr(-2);
+  }
+  return colour;
+}
+
+function colorByHashCode(value) {
+    return value.getHashCode().intToHSL();
+}
+String.prototype.getHashCode = function() {
+    var hash = 0;
+    if (this.length == 0) return hash;
+    for (var i = 0; i < this.length; i++) {
+        hash = this.charCodeAt(i) + ((hash << 5) - hash);
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+};
+Number.prototype.intToHSL = function() {
+    var shortened = this % 360;
+    return "hsl(" + shortened + ",50%,50%)";
+};
+
+const colours = ["#000000","#00FF00","#0000FF","#FF0000","#01FFFE","#FFA6FE","#FFDB66","#006401","#010067","#95003A","#007DB5","#FF00F6","#FFEEE8","#774D00","#90FB92","#0076FF","#D5FF00","#FF937E","#6A826C","#FF029D","#FE8900","#7A4782","#7E2DD2","#85A900","#FF0056","#A42400","#00AE7E","#683D3B","#BDC6FF","#263400","#BDD393","#00B917","#9E008E","#001544","#C28C9F","#FF74A3","#01D0FF","#004754","#E56FFE","#788231","#0E4CA1","#91D0CB","#BE9970","#968AE8","#BB8800","#43002C","#DEFF74","#00FFC6","#FFE502","#620E00","#008F9C","#98FF52","#7544B1","#B500FF","#00FF78","#FF6E41","#005F39","#6B6882","#5FAD4E","#A75740","#A5FFD2","#FFB167","#009BFF","#E85EBE"];
+
+
+    // get bar chart canvas
+    var mychart = document.getElementById("linechart").getContext("2d");
+
+    steps = 10
+    //max = {{max}}
+    max = 20
+
+    // draw line chart
+    new Chart(mychart, {
+    type: 'line',
+        data: {
+        labels: [{% for day in dayslist %}
+                    "{{convert_timestamp_day(day)}}",
+            {% endfor %}],
+    datasets: [
+    {% for name, score in playersdict.items() %}
+    
+    {
+      label: "{{name}}",
+      data: [
+      {% for score in playersdict[name]['list'] %}
+      "{{score}}",
+      
+      {% endfor %}
+      
+      ],
+        fill: false,
+        //borderColor: 'rgb(75, 192, 192)',
+        //borderColor: colorByHashCode("{{name}}"),
+        //backgroundColor: colorByHashCode("{{name}}"),
+        borderColor: colours["{{loop.index}}"],
+        backgroundColor: colours["{{loop.index}}"],
+        tension: 0.1
+    },
+    {% endfor %}
+    //{
+      //label: 'NAME',
+      //data: [800,2300,4000,5400,2999],
+          //fill: false,
+    //borderColor: 'rgb(75, 192, 192)',
+    //tension: 0.1
+    //},
+  ]
+},
+
+options: {
+            legend: {
+                position: "bottom",
+                align: "center"
+        }
+}
+});
+    </script>
+    
     <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
 
 

@@ -11,9 +11,10 @@ table {
 /*      display: block; */
 }
 .history {
-        overflow:auto;
+        /*overflow:auto;
         max-height:300px;
-        display:block;
+        display:block;*/
+        height:0;   
 }
 
 /*td {
@@ -125,4 +126,15 @@ background: linear-gradient(to right, rgba(194,94,3,1), rgba(222,155,94,1), rgba
 }
 .recalculate {
    /* float: right;*/
+}
+
+
+
+
+
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
 }
